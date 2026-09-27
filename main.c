@@ -18,11 +18,8 @@ int main()
         BeginDrawing();
             ClearBackground(DARKGRAY);
 
-            // Update
-
-            // Draw
+            updateGame();
             drawGame(10, 10);
-
         EndDrawing();
     }
 

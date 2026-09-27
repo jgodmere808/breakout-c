@@ -6,6 +6,7 @@
 
 #define PLATFORM_WIDTH  120
 #define PLATFORM_HEIGHT 10
+#define PLATFORM_SPEED  8
 
 #define BALL_WIDTH  10
 #define BALL_HEIGHT 10
@@ -62,7 +63,16 @@ void initGame()
 
 void updateGame()
 {
+    if (IsKeyDown(KEY_LEFT))  platform.pos.x -= PLATFORM_SPEED;
+    if (IsKeyDown(KEY_RIGHT)) platform.pos.x += PLATFORM_SPEED;
 
+    // platform wall collision
+    if (platform.pos.x < 0) {
+        platform.pos.x = 0;
+    }
+    if (platform.pos.x + platform.width > game.width) {
+        platform.pos.x = game.width - platform.width;
+    }
 }
 
 void drawGame(int posX, int posY)
