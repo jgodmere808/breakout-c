@@ -79,6 +79,23 @@ void updateGame()
     if (IsKeyDown(KEY_LEFT))  platform.pos.x -= PLATFORM_SPEED;
     if (IsKeyDown(KEY_RIGHT)) platform.pos.x += PLATFORM_SPEED;
 
+    // ball position update
+    ball.pos.x += ball.vel.dx;
+    ball.pos.y += ball.vel.dy;
+
+    // ball platform collision
+    if (ball.vel.dy > 0) { // ball is moving downward
+        if (
+            ball.pos.y + ball.height <= platform.pos.y &&
+            ball.pos.y + ball.height + ball.vel.dy >= platform.pos.y &&
+            ball.pos.x + ball.width >= platform.pos.x &&
+            ball.pos.x <= platform.pos.x + platform.width
+        ) {
+            ball.vel.dy = -ball.vel.dy;
+            ball.pos.y = platform.pos.y - ball.height;
+        }
+    }
+
     // platform wall collision
     if (platform.pos.x < 0) {
         platform.pos.x = 0;
@@ -87,16 +104,18 @@ void updateGame()
         platform.pos.x = game.width - platform.width;
     }
 
-    // ball position update
-    ball.pos.x += ball.vel.dx;
-    ball.pos.y += ball.vel.dy;
-
     // ball wall collision
-    if (ball.pos.x < 0 || ball.pos.x + ball.width > game.width) {
+    if (ball.pos.x + ball.vel.dx < 0) {
         ball.vel.dx = -ball.vel.dx;
+        ball.pos.x = 0;
     }
-    if (ball.pos.y < 0) {
+    if (ball.pos.x + ball.vel.dx + ball.width > game.width) {
+        ball.vel.dx = -ball.vel.dx;
+        ball.pos.x = game.width - ball.width;
+    }
+    if (ball.pos.y + ball.vel.dy < 0) {
         ball.vel.dy = -ball.vel.dy;
+        ball.pos.y = 0;
     }
     
     // game over logic
