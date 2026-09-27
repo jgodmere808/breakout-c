@@ -46,6 +46,7 @@ static Ball ball;
 static Game game;
 
 static bool gameStarted = false;
+static bool gameOver = false;
 
 void initGame()
 {
@@ -65,6 +66,10 @@ void initGame()
 
 void updateGame()
 {
+    if (gameOver) {
+        return;
+    }
+
     if (!gameStarted) {
         if (IsKeyDown(KEY_SPACE)) gameStarted = true;
         else return;
@@ -90,8 +95,13 @@ void updateGame()
     if (ball.pos.x < 0 || ball.pos.x + ball.width > game.width) {
         ball.vel.dx = -ball.vel.dx;
     }
-    if (ball.pos.y < 0 || ball.pos.y + ball.height > game.height) {
+    if (ball.pos.y < 0) {
         ball.vel.dy = -ball.vel.dy;
+    }
+    
+    // game over logic
+    if (ball.pos.y + ball.height > game.height) {
+        gameOver = true;
     }
 }
 
@@ -100,7 +110,7 @@ void drawGame(int posX, int posY)
     if (!gameStarted) {
         DrawText(
             "Press SPACE to start",
-            posX + (game.width - 180) / 2,
+            posX + (game.width - 175) / 2,
             posY + game.height / 2,
             16,
             WHITE
@@ -127,4 +137,14 @@ void drawGame(int posX, int posY)
 
     // Game Field
     DrawRectangleLines(posX, posY, game.width, game.height, WHITE);
+
+    if (gameOver) {
+        DrawText(
+            "GAME OVER",
+            posX + (game.width - 100) / 2,
+            posY + game.height / 2,
+            16,
+            WHITE
+        );
+    }
 }
