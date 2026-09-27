@@ -56,7 +56,7 @@ void initGame()
     };
     ball = (Ball){
         { (GAME_WIDTH - BALL_WIDTH) / 2, GAME_HEIGHT - 2 * PLATFORM_HEIGHT - BALL_HEIGHT },
-        { 1, 1 },
+        { 4, -4 },
         BALL_WIDTH,
         BALL_HEIGHT
     };
@@ -70,6 +70,7 @@ void updateGame()
         else return;
     }
 
+    // platform controls
     if (IsKeyDown(KEY_LEFT))  platform.pos.x -= PLATFORM_SPEED;
     if (IsKeyDown(KEY_RIGHT)) platform.pos.x += PLATFORM_SPEED;
 
@@ -79,6 +80,18 @@ void updateGame()
     }
     if (platform.pos.x + platform.width > game.width) {
         platform.pos.x = game.width - platform.width;
+    }
+
+    // ball position update
+    ball.pos.x += ball.vel.dx;
+    ball.pos.y += ball.vel.dy;
+
+    // ball wall collision
+    if (ball.pos.x < 0 || ball.pos.x + ball.width > game.width) {
+        ball.vel.dx = -ball.vel.dx;
+    }
+    if (ball.pos.y < 0 || ball.pos.y + ball.height > game.height) {
+        ball.vel.dy = -ball.vel.dy;
     }
 }
 
