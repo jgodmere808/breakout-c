@@ -98,6 +98,8 @@ void initGame()
 
 void updateGame()
 {
+    int row, col, blockX, blockY, blockWidth, blockHeight;
+
     if (gameOver) {
         return;
     }
@@ -149,6 +151,31 @@ void updateGame()
         ball.vel.dy = -ball.vel.dy;
         ball.pos.y = 0;
     }
+
+    // ball block collision
+    for (row = 0; row < BLOCKS_ROWS; row++) {
+        for (col = 0; col < BLOCKS_COLS; col++) {
+            if (!game.blocks[row][col].active) continue;
+
+            blockX = game.blocks[row][col].pos.x;
+            blockY = game.blocks[row][col].pos.y;
+            blockWidth = game.blocks[row][col].width;
+            blockHeight = game.blocks[row][col].height;
+
+            // bottom collision
+            if (
+                ball.vel.dy < 0 && // moving upwards
+                ball.pos.x + ball.vel.dx + ball.width >= blockX &&
+                ball.pos.x + ball.vel.dx <= blockX + blockWidth &&
+                ball.pos.y >= blockY + blockHeight &&
+                ball.pos.y + ball.vel.dy <= blockY + blockHeight
+            ) {
+                ball.vel.dy = -ball.vel.dy;
+                ball.pos.y = blockY + blockHeight;
+                game.blocks[row][col].active = 0;
+            }
+        }
+    }
     
     // game over logic
     if (ball.pos.y + ball.height > game.height) {
@@ -173,6 +200,8 @@ void drawGame(int posX, int posY)
     // Blocks
     for (row = 0; row < BLOCKS_ROWS; row++) {
         for (col = 0; col < BLOCKS_COLS; col++) {
+            if (!game.blocks[row][col].active) continue;
+
             DrawRectangle(
                 posX + game.blocks[row][col].pos.x,
                 posY + game.blocks[row][col].pos.y,
