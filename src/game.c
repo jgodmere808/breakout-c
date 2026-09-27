@@ -11,6 +11,12 @@
 #define BALL_WIDTH  10
 #define BALL_HEIGHT 10
 
+#define BLOCK_WIDTH  40
+#define BLOCK_HEIGHT 9
+
+#define BLOCKS_COLS 16
+#define BLOCKS_ROWS 8
+
 typedef struct _position {
     float x;
     float y;
@@ -34,9 +40,17 @@ typedef struct _platform {
     int height;
 } Platform;
 
+typedef struct _block {
+    Position pos;
+    int active;
+    int width;
+    int height;
+} Block;
+
 typedef struct _game {
     Ball *ball;
     Platform *platform;
+    Block blocks[BLOCKS_ROWS][BLOCKS_COLS];
     int width;
     int height;
 } Game;
@@ -50,6 +64,8 @@ static bool gameOver = false;
 
 void initGame()
 {
+    int row, col;
+
     platform = (Platform){
         { (GAME_WIDTH - PLATFORM_WIDTH) / 2, GAME_HEIGHT - 2 * PLATFORM_HEIGHT },
         PLATFORM_WIDTH,
@@ -61,7 +77,23 @@ void initGame()
         BALL_WIDTH,
         BALL_HEIGHT
     };
-    game = (Game){ &ball, &platform, GAME_WIDTH, GAME_HEIGHT };
+    game = (Game){
+        .ball = &ball,
+        .platform = &platform,
+        .width = GAME_WIDTH,
+        .height = GAME_HEIGHT
+    };
+
+    for (row = 0; row < BLOCKS_ROWS; row++) {
+        for (col = 0; col < BLOCKS_COLS; col++) {
+            game.blocks[row][col] = (Block){
+                .pos = {32.5 + col * 45, 40 + row * 12 },
+                .width = BLOCK_WIDTH,
+                .height = BLOCK_HEIGHT,
+                .active = 1
+            };
+        }
+    }
 }
 
 void updateGame()
@@ -126,6 +158,8 @@ void updateGame()
 
 void drawGame(int posX, int posY)
 {
+    int row, col;
+
     if (!gameStarted) {
         DrawText(
             "Press SPACE to start",
@@ -134,6 +168,19 @@ void drawGame(int posX, int posY)
             16,
             WHITE
         );
+    }
+
+    // Blocks
+    for (row = 0; row < BLOCKS_ROWS; row++) {
+        for (col = 0; col < BLOCKS_COLS; col++) {
+            DrawRectangle(
+                posX + game.blocks[row][col].pos.x,
+                posY + game.blocks[row][col].pos.y,
+                game.blocks[row][col].width,
+                game.blocks[row][col].height,
+                RED
+            );
+        }
     }
 
     // Ball
