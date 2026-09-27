@@ -45,6 +45,8 @@ static Platform platform;
 static Ball ball;
 static Game game;
 
+static bool gameStarted = false;
+
 void initGame()
 {
     platform = (Platform){
@@ -54,7 +56,7 @@ void initGame()
     };
     ball = (Ball){
         { (GAME_WIDTH - BALL_WIDTH) / 2, GAME_HEIGHT - 2 * PLATFORM_HEIGHT - BALL_HEIGHT },
-        { 0, 0 },
+        { 1, 1 },
         BALL_WIDTH,
         BALL_HEIGHT
     };
@@ -63,6 +65,11 @@ void initGame()
 
 void updateGame()
 {
+    if (!gameStarted) {
+        if (IsKeyDown(KEY_SPACE)) gameStarted = true;
+        else return;
+    }
+
     if (IsKeyDown(KEY_LEFT))  platform.pos.x -= PLATFORM_SPEED;
     if (IsKeyDown(KEY_RIGHT)) platform.pos.x += PLATFORM_SPEED;
 
@@ -77,6 +84,16 @@ void updateGame()
 
 void drawGame(int posX, int posY)
 {
+    if (!gameStarted) {
+        DrawText(
+            "Press SPACE to start",
+            posX + (game.width - 180) / 2,
+            posY + game.height / 2,
+            16,
+            WHITE
+        );
+    }
+
     // Ball
     DrawRectangle(
         posX + ball.pos.x,
